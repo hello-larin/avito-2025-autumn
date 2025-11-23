@@ -1,0 +1,569 @@
+{
+	"info": {
+		"_postman_id": "d47a8dff-ad7f-4a2f-a7f1-9b1608fe5cc0",
+		"name": "avito-2025",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "38819587"
+	},
+	"item": [
+		{
+			"name": "team",
+			"item": [
+				{
+					"name": "team create",
+					"item": [
+						{
+							"name": "new_team",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"team_name\": \"frontend2\",\n    \"members\": [\n        {\n            \"user_id\": \"u23\",\n            \"username\": \"Alice\",\n            \"is_active\": true\n        },\n        {\n            \"user_id\": \"u28\",\n            \"username\": \"Bob\",\n            \"is_active\": true\n        },\n        {\n            \"user_id\": \"u26\",\n            \"username\": \"Charlie\",\n            \"is_active\": true\n        },\n        {\n            \"user_id\": \"u27\",\n            \"username\": \"Hello\",\n            \"is_active\": true\n        },\n        {\n            \"user_id\": \"u28\",\n            \"username\": \"World\",\n            \"is_active\": false\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/team/add"
+							},
+							"response": []
+						},
+						{
+							"name": "team exists",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"team_name\": \"backend\",\n    \"members\": [\n        {\n            \"user_id\": \"u4\",\n            \"username\": \"Diana\",\n            \"is_active\": true\n        }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/team/add"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "get team",
+					"item": [
+						{
+							"name": "get_team",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/team/get?team_name=frontend2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"team",
+										"get"
+									],
+									"query": [
+										{
+											"key": "team_name",
+											"value": "frontend2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "team_not_found",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/team/get?team_name=none",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"team",
+										"get"
+									],
+									"query": [
+										{
+											"key": "team_name",
+											"value": "none"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "get review",
+					"item": [
+						{
+							"name": "get review",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "user_id",
+											"value": "u2",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:8080/users/getReview?user_id=u11",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"users",
+										"getReview"
+									],
+									"query": [
+										{
+											"key": "user_id",
+											"value": "u11"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "user not found",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "user_id",
+											"value": "u2",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:8080/users/getReview?user_id=test",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"users",
+										"getReview"
+									],
+									"query": [
+										{
+											"key": "user_id",
+											"value": "test"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "no pr",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "user_id",
+											"value": "u2",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:8080/users/getReview?user_id=u1",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"users",
+										"getReview"
+									],
+									"query": [
+										{
+											"key": "user_id",
+											"value": "u1"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "set active",
+					"item": [
+						{
+							"name": "set active false",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"user_id\": \"u3\",\n  \"is_active\": false\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/users/setIsActive"
+							},
+							"response": []
+						},
+						{
+							"name": "set active not found",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user_id\": \"test\",\n    \"is_active\": false\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/users/setIsActive"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "pool",
+			"item": [
+				{
+					"name": "merge",
+					"item": [
+						{
+							"name": "merge pull",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"pull_request_id\": \"pr-1001\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/pullRequest/merge"
+							},
+							"response": []
+						},
+						{
+							"name": "no pr found",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"pull_request_id\": \"pr-0000\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/pullRequest/merge"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "create pool",
+					"item": [
+						{
+							"name": "new pool 4 user in team",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"pull_request_id\": \"pr-1007\",\r\n    \"pull_request_name\": \"Add World feature\",\r\n    \"author_id\": \"u28\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/pullRequest/create"
+							},
+							"response": []
+						},
+						{
+							"name": "new pool 1 user in team",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"pull_request_id\": \"pr-1001\",\n    \"pull_request_name\": \"Add search feature\",\n    \"author_id\": \"u1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/pullRequest/create"
+							},
+							"response": []
+						},
+						{
+							"name": "user not found",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"pull_request_id\": \"pr-1001\",\n    \"pull_request_name\": \"Add search feature\",\n    \"author_id\": \"test\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/pullRequest/create"
+							},
+							"response": []
+						},
+						{
+							"name": "pool already exists",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"pull_request_id\": \"pr-1001\",\n    \"pull_request_name\": \"Add search feature\",\n    \"author_id\": \"u1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/pullRequest/create"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "reassign",
+					"item": [
+						{
+							"name": "reassign merged",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"pull_request_id\": \"pr-1001\",\n    \"old_reviewer_id\": \"u2\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/pullRequest/reassign"
+							},
+							"response": []
+						},
+						{
+							"name": "reassign user not in team",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"pull_request_id\": \"pr-1003\",\n    \"old_reviewer_id\": \"u2\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/pullRequest/reassign"
+							},
+							"response": []
+						},
+						{
+							"name": "no candidate",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"pull_request_id\": \"pr-1002\",\n    \"old_reviewer_id\": \"u14\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/pullRequest/reassign"
+							},
+							"response": []
+						},
+						{
+							"name": "reassign not found pr",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"pull_request_id\": \"pr-0000\",\n    \"old_reviewer_id\": \"u1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/pullRequest/reassign"
+							},
+							"response": []
+						},
+						{
+							"name": "reasign complete",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"pull_request_id\": \"pr-1007\",\n    \"old_reviewer_id\": \"u26\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/pullRequest/reassign"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}
