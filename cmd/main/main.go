@@ -26,6 +26,10 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/go-playground/validator/v10"
+
+	trmpgx "github.com/avito-tech/go-transaction-manager/drivers/pgxv5/v2"
+
+	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
 )
 
 func main() {
@@ -42,13 +46,14 @@ func main() {
 		slog.Warn("Failed to initialize PostgreSQL pool", "error", err)
 	}
 	defer pg.Close()
+	trManager := manager.Must(trmpgx.NewDefaultFactory(pg))
 	validate := validator.New(validator.WithRequiredStructEnabled())
-	prRepository := prRepository.New(pg)
-	teamRepository := teamRepository.New(pg)
-	userRepository := userRepository.New(pg)
-	prUsecase := prUsecase.New(prRepository, userRepository)
-	teamUsecase := teamUsecase.New(teamRepository, userRepository)
-	userUsecase := userUsecase.New(userRepository, prRepository)
+	prRepository := prRepository.New(pg, trmpgx.DefaultCtxGetter)
+	teamRepository := teamRepository.New(pg, trmpgx.DefaultCtxGetter)
+	userRepository := userRepository.New(pg, trmpgx.DefaultCtxGetter)
+	prUsecase := prUsecase.New(prRepository, userRepository, trManager)
+	teamUsecase := teamUsecase.New(teamRepository, userRepository, trManager)
+	userUsecase := userUsecase.New(userRepository, prRepository, trManager)
 	prHTTP := prHttp.New(prUsecase, validate)
 	teamHTTP := teamHttp.New(teamUsecase, validate)
 	userHTTP := userHttp.New(userUsecase, validate)

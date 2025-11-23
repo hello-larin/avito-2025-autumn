@@ -9,14 +9,20 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	trmpgx "github.com/avito-tech/go-transaction-manager/drivers/pgxv5/v2"
 )
 
 type PullRequestRepository struct {
-	db *pgxpool.Pool
+	db     *pgxpool.Pool
+	getter *trmpgx.CtxGetter
 }
 
-func New(db *pgxpool.Pool) *PullRequestRepository {
-	return &PullRequestRepository{db: db}
+func New(db *pgxpool.Pool, getter *trmpgx.CtxGetter) *PullRequestRepository {
+	return &PullRequestRepository{
+		db:     db,
+		getter: getter,
+	}
 }
 
 func (r *PullRequestRepository) GetPRByID(ctx context.Context, id string) (*models.PullRequestDB, error) {
@@ -25,7 +31,8 @@ func (r *PullRequestRepository) GetPRByID(ctx context.Context, id string) (*mode
 		FROM pull_requests 
 		WHERE id = $1
 	`
-	row, err := r.db.Query(ctx, query, id)
+	conn := r.getter.DefaultTrOrDB(ctx, r.db)
+	row, err := conn.Query(ctx, query, id)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +53,8 @@ func (r *PullRequestRepository) CreatePR(
 	VALUES ($1, $2, $3)
 	RETURNING id, name, author_id, status
 	`
-	row, err := r.db.Query(ctx, query, pr.PullRequestID, pr.PullRequestName, pr.AuthorID)
+	conn := r.getter.DefaultTrOrDB(ctx, r.db)
+	row, err := conn.Query(ctx, query, pr.PullRequestID, pr.PullRequestName, pr.AuthorID)
 	if err != nil {
 		return nil, customerror.ErrPRExists
 	}
@@ -63,7 +71,8 @@ func (r *PullRequestRepository) AssignReviewer(ctx context.Context, prID, userID
 	INSERT INTO pr_reviewers (pr_id, user_id)
 	VALUES ($1, $2)
 	`
-	_, err := r.db.Exec(ctx, query, prID, userID)
+	conn := r.getter.DefaultTrOrDB(ctx, r.db)
+	_, err := conn.Exec(ctx, query, prID, userID)
 	if err != nil {
 		return err
 	}
@@ -76,7 +85,8 @@ func (r *PullRequestRepository) UnassignReviewer(ctx context.Context, prID, user
 	SET is_removed = TRUE 
 	WHERE pr_id = $1 AND user_id = $2 AND is_removed = FALSE
 	`
-	row, err := r.db.Exec(ctx, query, prID, userID)
+	conn := r.getter.DefaultTrOrDB(ctx, r.db)
+	row, err := conn.Exec(ctx, query, prID, userID)
 	if err != nil {
 		return err
 	}
@@ -94,7 +104,8 @@ func (r *PullRequestRepository) MergePR(ctx context.Context, id string) (*models
 	SET status = 'MERGED' WHERE id = $1
 	RETURNING id, name, author_id, status, created_at, merged_at
 	`
-	row, err := r.db.Query(ctx, query, id)
+	conn := r.getter.DefaultTrOrDB(ctx, r.db)
+	row, err := conn.Query(ctx, query, id)
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +124,8 @@ func (r *PullRequestRepository) GetActivePRReviewers(ctx context.Context, prID s
 		FROM pr_reviewers 
 		WHERE pr_id = $1 AND is_removed = FALSE
 	`
-	rows, err := r.db.Query(ctx, query, prID)
+	conn := r.getter.DefaultTrOrDB(ctx, r.db)
+	rows, err := conn.Query(ctx, query, prID)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +148,8 @@ func (r *PullRequestRepository) GetAllPRReviewers(ctx context.Context, prID stri
 		FROM pr_reviewers 
 		WHERE pr_id = $1
 	`
-	rows, err := r.db.Query(ctx, query, prID)
+	conn := r.getter.DefaultTrOrDB(ctx, r.db)
+	rows, err := conn.Query(ctx, query, prID)
 	if err != nil {
 		return nil, err
 	}
@@ -157,7 +170,8 @@ func (r *PullRequestRepository) GetUserPRs(ctx context.Context, userID string) (
 		JOIN pr_reviewers prr ON pr.id = prr.pr_id
 		WHERE prr.user_id = $1 AND prr.is_removed = FALSE
 	`
-	rows, err := r.db.Query(ctx, query, userID)
+	conn := r.getter.DefaultTrOrDB(ctx, r.db)
+	rows, err := conn.Query(ctx, query, userID)
 	if err != nil {
 		return nil, err
 	}

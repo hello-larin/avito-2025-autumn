@@ -5,10 +5,14 @@ go 1.25.4
 require github.com/jackc/pgx/v5 v5.7.6
 
 require (
+	github.com/avito-tech/go-transaction-manager/drivers/pgxv5/v2 v2.0.2 // indirect
+	github.com/avito-tech/go-transaction-manager/trm/v2 v2.0.2 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.10 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
+	go.uber.org/atomic v1.7.0 // indirect
+	go.uber.org/multierr v1.9.0 // indirect
 	golang.org/x/sys v0.36.0 // indirect
 )
 

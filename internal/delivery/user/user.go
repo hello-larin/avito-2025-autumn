@@ -41,6 +41,7 @@ func (h *Handler) SetActive(w http.ResponseWriter, r *http.Request) {
 
 	resp := toSetActiveResponse(user)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(resp)
 	if err != nil {
 		http.Error(w, "JSON_ENCODE_ERROR", http.StatusBadRequest)
@@ -62,6 +63,7 @@ func (h *Handler) GetReview(w http.ResponseWriter, r *http.Request) {
 
 	resp := toPRResponse(userID, result)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(resp)
 	if err != nil {
 		http.Error(w, "JSON_ENCODE_ERROR", http.StatusBadRequest)

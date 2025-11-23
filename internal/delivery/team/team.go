@@ -69,6 +69,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 
 	resp := toDTO(team, members)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(resp)
 	if err != nil {
 		http.Error(w, "JSON_ENCODE_ERROR", http.StatusBadRequest)

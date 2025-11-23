@@ -5,6 +5,8 @@ import (
 	"errors"
 	"slices"
 
+	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
+
 	customerror "github.com/hello-larin/avito-2025-autumn/internal/error"
 	"github.com/hello-larin/avito-2025-autumn/internal/models"
 )
@@ -12,12 +14,14 @@ import (
 type Usecase struct {
 	prRepo   prRepository
 	userRepo userRepository
+	manager  *manager.Manager
 }
 
-func New(prRepo prRepository, userRepo userRepository) *Usecase {
+func New(prRepo prRepository, userRepo userRepository, manager *manager.Manager) *Usecase {
 	return &Usecase{
 		prRepo:   prRepo,
 		userRepo: userRepo,
+		manager:  manager,
 	}
 }
 
@@ -36,32 +40,39 @@ func (uc *Usecase) CreatePullRequest(
 	if !errors.Is(err, customerror.ErrNotFound) {
 		return nil, nil, err
 	}
-
-	createdPR, err := uc.prRepo.CreatePR(ctx, pr)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	// Может выпасть ещё автор поэтому +1
-	activeMembers, err := uc.userRepo.GetActiveTeamMembers(ctx, author.TeamName, 3)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	// По заданию до 2 ревьюверов на ПР
+	var createdPR *models.PullRequestShortDB
 	var insertedReviewers []string
-	for _, user := range activeMembers {
-		if len(insertedReviewers) == 2 {
-			break
-		}
-		if user.UserID == pr.AuthorID {
-			continue
-		}
-		err = uc.prRepo.AssignReviewer(ctx, createdPR.PullRequestID, user.UserID)
-		insertedReviewers = append(insertedReviewers, user.UserID)
+	err = uc.manager.Do(ctx, func(ctx context.Context) error {
+
+		createdPR, err = uc.prRepo.CreatePR(ctx, pr)
 		if err != nil {
-			return nil, nil, err
+			return err
 		}
+
+		// Может выпасть ещё автор поэтому +1
+		activeMembers, err := uc.userRepo.GetActiveTeamMembers(ctx, author.TeamName, 3)
+		if err != nil {
+			return err
+		}
+
+		// По заданию до 2 ревьюверов на ПР
+		for _, user := range activeMembers {
+			if len(insertedReviewers) == 2 {
+				break
+			}
+			if user.UserID == pr.AuthorID {
+				continue
+			}
+			err = uc.prRepo.AssignReviewer(ctx, createdPR.PullRequestID, user.UserID)
+			insertedReviewers = append(insertedReviewers, user.UserID)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, nil, err
 	}
 	return createdPR, insertedReviewers, nil
 }
@@ -146,11 +157,18 @@ func (uc *Usecase) ReassignReviewer(
 		return nil, nil, "", customerror.ErrNoCandidate
 	}
 
-	if err = uc.prRepo.UnassignReviewer(ctx, prID, oldReviewerID); err != nil {
-		return nil, nil, "", err
-	}
+	err = uc.manager.Do(ctx, func(ctx context.Context) error {
 
-	if err = uc.prRepo.AssignReviewer(ctx, prID, newReviewerID); err != nil {
+		if err = uc.prRepo.UnassignReviewer(ctx, prID, oldReviewerID); err != nil {
+			return err
+		}
+
+		if err = uc.prRepo.AssignReviewer(ctx, prID, newReviewerID); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
 		return nil, nil, "", err
 	}
 

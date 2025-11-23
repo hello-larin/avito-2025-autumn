@@ -33,8 +33,8 @@ func WriteErrorResponse(w http.ResponseWriter, err error) {
 		ErrTeamExists.Error():  {http.StatusConflict, "team_name already exists"},
 		ErrPRExists.Error():    {http.StatusConflict, "PR id already exists"},
 		ErrPRMerged.Error():    {http.StatusConflict, "cannot reassign on merged PR"},
-		ErrNotAssigned.Error(): {http.StatusBadRequest, "reviewer is not assigned to this PR"},
-		ErrNoCandidate.Error(): {http.StatusBadRequest, "no active replacement candidate in team"},
+		ErrNotAssigned.Error(): {http.StatusConflict, "reviewer is not assigned to this PR"},
+		ErrNoCandidate.Error(): {http.StatusConflict, "no active replacement candidate in team"},
 		ErrNotFound.Error():    {http.StatusNotFound, "resource not found"},
 		ErrJSONParse.Error():   {http.StatusBadRequest, "cannot parse json"},
 	}

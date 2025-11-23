@@ -8,14 +8,20 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	trmpgx "github.com/avito-tech/go-transaction-manager/drivers/pgxv5/v2"
 )
 
 type Repository struct {
-	db *pgxpool.Pool
+	db     *pgxpool.Pool
+	getter *trmpgx.CtxGetter
 }
 
-func New(db *pgxpool.Pool) *Repository {
-	return &Repository{db: db}
+func New(db *pgxpool.Pool, getter *trmpgx.CtxGetter) *Repository {
+	return &Repository{
+		db:     db,
+		getter: getter,
+	}
 }
 
 func (r *Repository) GetUserByID(ctx context.Context, userID string) (*models.UserDB, error) {
@@ -24,7 +30,8 @@ func (r *Repository) GetUserByID(ctx context.Context, userID string) (*models.Us
 		FROM users 
 		WHERE id = $1
 	`
-	row, err := r.db.Query(ctx, query, userID)
+	conn := r.getter.DefaultTrOrDB(ctx, r.db)
+	row, err := conn.Query(ctx, query, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +49,8 @@ func (r *Repository) SetUserActive(ctx context.Context, userID string, isActive 
 		WHERE id = $2
 		RETURNING id, username, team_name, is_active
 	`
-	row, err := r.db.Query(ctx, query, isActive, userID)
+	conn := r.getter.DefaultTrOrDB(ctx, r.db)
+	row, err := conn.Query(ctx, query, isActive, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +67,8 @@ func (r *Repository) GetTeamMembers(ctx context.Context, teamName string) ([]mod
 		FROM users 
 		WHERE team_name = $1
 	`
-	rows, err := r.db.Query(ctx, query, teamName)
+	conn := r.getter.DefaultTrOrDB(ctx, r.db)
+	rows, err := conn.Query(ctx, query, teamName)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +91,8 @@ func (r *Repository) GetActiveTeamMembers(
 		ORDER BY RANDOM() 
 		LIMIT $2
 	`
-	rows, err := r.db.Query(ctx, query, teamName, limit)
+	conn := r.getter.DefaultTrOrDB(ctx, r.db)
+	rows, err := conn.Query(ctx, query, teamName, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +115,8 @@ func (r *Repository) AddUserToTeam(
 	 DO UPDATE SET team_name = $3 
 	RETURNING id, username, team_name, is_active
 	`
-	rows, err := r.db.Query(ctx, query, user.UserID, user.Username, teamName, user.IsActive)
+	conn := r.getter.DefaultTrOrDB(ctx, r.db)
+	rows, err := conn.Query(ctx, query, user.UserID, user.Username, teamName, user.IsActive)
 	if err != nil {
 		return nil, err
 	}

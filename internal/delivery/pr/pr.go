@@ -70,6 +70,7 @@ func (h *Handler) Merge(w http.ResponseWriter, r *http.Request) {
 
 	resp := toMergeResponse(mergedPR, reviewers)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(resp)
 	if err != nil {
 		http.Error(w, "JSON_ENCODE_ERROR", http.StatusBadRequest)
@@ -96,6 +97,7 @@ func (h *Handler) Reassign(w http.ResponseWriter, r *http.Request) {
 
 	resp := toReassignResponse(pr, reviewers, newReviewerID)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(resp)
 	if err != nil {
 		http.Error(w, "JSON_ENCODE_ERROR", http.StatusBadRequest)

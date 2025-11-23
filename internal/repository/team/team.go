@@ -8,14 +8,20 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	trmpgx "github.com/avito-tech/go-transaction-manager/drivers/pgxv5/v2"
 )
 
 type Repository struct {
-	db *pgxpool.Pool
+	db     *pgxpool.Pool
+	getter *trmpgx.CtxGetter
 }
 
-func New(db *pgxpool.Pool) *Repository {
-	return &Repository{db: db}
+func New(db *pgxpool.Pool, getter *trmpgx.CtxGetter) *Repository {
+	return &Repository{
+		db:     db,
+		getter: getter,
+	}
 }
 
 func (r *Repository) GetTeamByName(ctx context.Context, name string) (*models.TeamDB, error) {
@@ -24,7 +30,8 @@ func (r *Repository) GetTeamByName(ctx context.Context, name string) (*models.Te
 		FROM teams 
 		WHERE team_name = $1
 	`
-	row, err := r.db.Query(ctx, query, name)
+	conn := r.getter.DefaultTrOrDB(ctx, r.db)
+	row, err := conn.Query(ctx, query, name)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +48,8 @@ func (r *Repository) CreateTeam(ctx context.Context, name string) (*models.TeamD
 	 VALUES ($1)
 	 RETURNING team_name, created_at
 	`
-	row, err := r.db.Query(ctx, query, name)
+	conn := r.getter.DefaultTrOrDB(ctx, r.db)
+	row, err := conn.Query(ctx, query, name)
 	if err != nil {
 		return nil, err
 	}

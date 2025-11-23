@@ -15,9 +15,9 @@ type pullRequest struct {
 }
 
 type prCreateRequest struct {
-	PullRequestID   string `json:"pull_request_id" validate:"required"`
+	PullRequestID   string `json:"pull_request_id"   validate:"required"`
 	PullRequestName string `json:"pull_request_name" validate:"required"`
-	AuthorID        string `json:"author_id" validate:"required"`
+	AuthorID        string `json:"author_id"         validate:"required"`
 }
 
 type prCreateResponse struct {
