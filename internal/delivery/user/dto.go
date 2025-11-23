@@ -1,8 +1,8 @@
 package user
 
 type userSetActiveRequest struct {
-	UserID   string `json:"user_id"   binding:"required"`
-	IsActive bool   `json:"is_active"`
+	UserID   string `json:"user_id" validate:"required"`
+	IsActive bool   `json:"is_active" validate:"required"`
 }
 
 type user struct {

@@ -1,14 +1,14 @@
 package team
 
 type team struct {
-	TeamName string       `json:"team_name"`
-	Members  []teamMember `json:"members"`
+	TeamName string       `json:"team_name" validate:"required"`
+	Members  []teamMember `json:"members" validate:"required"`
 }
 
 type teamMember struct {
-	UserID   string `json:"user_id"`
-	Username string `json:"username"`
-	IsActive bool   `json:"is_active"`
+	UserID   string `json:"user_id" validate:"required"`
+	Username string `json:"username" validate:"required"`
+	IsActive bool   `json:"is_active" validate:"required"`
 }
 
 type teamCreatedResponse struct {

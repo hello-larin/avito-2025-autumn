@@ -1,11 +1,11 @@
 package team
 
 import (
-	"context"github.com/hello-larin/avito-2025-autumn
-	"github.com/hello-larin/avito-2025-autumn
+	"context"
+	"errors"
 
-	customerror "avito-2025-autumn/internal/error"
-	"avito-2025-autumn/internal/models"
+	customerror "github.com/hello-larin/avito-2025-autumn/internal/error"
+	"github.com/hello-larin/avito-2025-autumn/internal/models"
 )
 
 type Usecase struct {

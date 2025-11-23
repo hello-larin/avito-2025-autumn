@@ -1,9 +1,9 @@
 package pr
 
 import (
-	"github.com/hello-larin/avito-2025-autumn
+	"context"
 
-	"avito-2025-autumn/internal/models"
+	"github.com/hello-larin/avito-2025-autumn/internal/models"
 )
 
 type prRepository interface {

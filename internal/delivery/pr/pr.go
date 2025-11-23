@@ -1,10 +1,10 @@
 package pr
 
 import (
-	"encoding/jsogithub.com/hello-larin/avito-2025-autumn
+	"encoding/json"
 	"net/http"
 
-	customerror "avito-2025-autumn/internal/error"
+	customerror "github.com/hello-larin/avito-2025-autumn/internal/error"
 
 	"github.com/go-playground/validator/v10"
 )
